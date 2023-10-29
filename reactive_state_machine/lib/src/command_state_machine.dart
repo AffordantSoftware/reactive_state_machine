@@ -22,8 +22,8 @@ abstract class CommandStateMachine<
     to._machine = this;
     onTransition(Transition(
       machine: this,
-      currentState: state,
-      nextState: to,
+      exitingState: state,
+      enteringState: to,
     ));
     state = to;
     state.onEnter();

@@ -1,13 +1,13 @@
 class Transition<StateMachineType, StateType> {
   const Transition({
     required this.machine,
-    required this.currentState,
-    required this.nextState,
+    required this.exitingState,
+    required this.enteringState,
   });
 
   final StateMachineType machine;
-  final StateType currentState;
-  final StateType nextState;
+  final StateType exitingState;
+  final StateType enteringState;
 }
 
 abstract class StateMachineBase<StateType> {

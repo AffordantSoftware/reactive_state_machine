@@ -30,27 +30,27 @@ class _StateEventHandler<SuperEvent, SuperState,
 /// Definition of a state
 /// This class is intended to be constructed using
 /// [StateDefinitionBuilder]
-class _StateDefinition<Event, SuperState, DefinedState extends SuperState> {
+class _StateDefinition<SuperState, Event, DefinedState extends SuperState> {
   const _StateDefinition({
     List<_StateEventHandler> handlers = const [],
     SideEffect<DefinedState>? onEnter,
     SideEffect<DefinedState>? onExit,
     List<_StateDefinition>? nestedStatesDefinitions,
   })  : _handlers = handlers,
-        _onEnter = onEnter,
+        _onEnterDelegate = onEnter,
         _onExit = onExit,
         _nestedStateDefinitions = nestedStatesDefinitions;
 
   const _StateDefinition.empty()
       : _handlers = const [],
-        _onEnter = null,
+        _onEnterDelegate = null,
         _onExit = null,
         _nestedStateDefinitions = null;
 
   final List<_StateEventHandler> _handlers;
 
   /// Called whenever entering state.
-  final SideEffect<DefinedState>? _onEnter;
+  final SideEffect<DefinedState>? _onEnterDelegate;
 
   /// Called whenever exiting state.
   final SideEffect<DefinedState>? _onExit;
@@ -61,9 +61,18 @@ class _StateDefinition<Event, SuperState, DefinedState extends SuperState> {
 
   bool _matchType(dynamic object) => object is DefinedState;
 
-  void onEnter(DefinedState state) {
-    _onEnter?.call(state);
-    _nestedStateDefinition(state)?.onEnter(state);
+  void _onEnter({
+    required dynamic exitingState,
+    required DefinedState enteringState,
+  }) {
+    // We avoid re-calling onEnter again if it's only a child-state transition
+    if (exitingState is! DefinedState) {
+      _onEnterDelegate?.call(enteringState);
+    }
+    _nestedStateDefinition(enteringState)?._onEnter(
+      exitingState: exitingState,
+      enteringState: enteringState,
+    );
   }
 
   // void onChange(DefinedState current, DefinedState next) {
@@ -77,9 +86,18 @@ class _StateDefinition<Event, SuperState, DefinedState extends SuperState> {
   //   }
   // }
 
-  void onExit(DefinedState state) {
-    _onExit?.call(state);
-    _nestedStateDefinition(state)?.onExit(state);
+  void onExit({
+    required DefinedState exitingState,
+    required dynamic enteringState,
+  }) {
+    // We prevent calling onExit if we transitioning to a child-state
+    if (enteringState is! DefinedState) {
+      _onExit?.call(exitingState);
+    }
+    _nestedStateDefinition(exitingState)?.onExit(
+      exitingState: exitingState,
+      enteringState: enteringState,
+    );
   }
 
   SuperState? add(

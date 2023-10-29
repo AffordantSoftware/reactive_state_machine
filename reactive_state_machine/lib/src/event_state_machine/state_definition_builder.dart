@@ -17,7 +17,7 @@ part of 'event_state_machine.dart';
 ///   ..define<ChildState1>(...)
 /// );
 /// ```
-class StateDefinitionBuilder<Event, State, DefinedState extends State> {
+class StateDefinitionBuilder<State, Event, DefinedState extends State> {
   final List<Type> _definedStates = [];
   final List<_StateEventHandler> _handlers = [];
   final List<_StateDefinition> _nestedStateDefinitions = [];
@@ -165,17 +165,17 @@ class StateDefinitionBuilder<Event, State, DefinedState extends State> {
   ///
   /// * [StateDefinitionBuilder] for more information about defining states.
   void define<NestedState extends DefinedState>([
-    StateDefinitionBuilder<Event, State, NestedState> Function(
-            StateDefinitionBuilder<Event, State, NestedState>)?
-        definitionBuilder,
+    StateDefinitionBuilder<State, Event, NestedState> Function(
+      StateDefinitionBuilder<State, Event, NestedState>,
+    )? definitionBuilder,
   ]) {
-    late _StateDefinition definition;
+    late _StateDefinition<State, Event, NestedState> definition;
     if (definitionBuilder != null) {
       definition = definitionBuilder
-          .call(StateDefinitionBuilder<Event, State, NestedState>())
+          .call(StateDefinitionBuilder<State, Event, NestedState>())
           ._build();
     } else {
-      definition = _StateDefinition<Event, State, NestedState>.empty();
+      definition = _StateDefinition<State, Event, NestedState>.empty();
     }
 
     assert(() {
@@ -189,7 +189,8 @@ class StateDefinitionBuilder<Event, State, DefinedState extends State> {
     _nestedStateDefinitions.add(definition);
   }
 
-  _StateDefinition<Event, State, DefinedState> _build() => _StateDefinition(
+  _StateDefinition<State, Event, DefinedState> _build() =>
+      _StateDefinition<State, Event, DefinedState>(
         handlers: _handlers,
         nestedStatesDefinitions:
             _nestedStateDefinitions.isNotEmpty ? _nestedStateDefinitions : null,

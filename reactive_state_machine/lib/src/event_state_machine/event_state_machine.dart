@@ -9,18 +9,18 @@ class EventStateMachineTransition<StateType, EventType>
     extends Transition<EventStateMachine<StateType, EventType>, StateType> {
   const EventStateMachineTransition({
     required super.machine,
-    required super.currentState,
-    required super.nextState,
+    required super.exitingState,
+    required super.enteringState,
     required this.event,
   });
 
   final EventType event;
 }
 
-typedef StateDefinitionBuilderCallback<EventType, StateType,
+typedef StateDefinitionBuilderCallback<StateType, EventType,
         DefinedState extends StateType>
-    = StateDefinitionBuilder<EventType, StateType, DefinedState> Function(
-  StateDefinitionBuilder<EventType, StateType, DefinedState>,
+    = StateDefinitionBuilder<StateType, EventType, DefinedState> Function(
+  StateDefinitionBuilder<StateType, EventType, DefinedState>,
 );
 
 /// {@template state_machine}
@@ -94,7 +94,10 @@ abstract class EventStateMachine<StateType, EventType>
     }
 
     _stateDefinitions = buildDefinitions(states.toList(growable: false));
-    _definitionForState(initial).onEnter(initial);
+    _definitionForState(initial)._onEnter(
+      exitingState: null,
+      enteringState: initial,
+    );
   }
 
   @override
@@ -139,28 +142,37 @@ abstract class EventStateMachine<StateType, EventType>
   /// See also:
   ///
   /// * [StateDefinitionBuilder] for more information about defining states.
-  StateDefinitionBuilder define<DefinedState extends StateType>([
-    StateDefinitionBuilderCallback? delegate,
+  StateDefinitionBuilder<StateType, EventType, DefinedState>
+      define<DefinedState extends StateType>([
+    StateDefinitionBuilderCallback<StateType, EventType, DefinedState>?
+        delegate,
   ]) {
     final builder =
-        StateDefinitionBuilder<EventType, StateType, DefinedState>();
+        StateDefinitionBuilder<StateType, EventType, DefinedState>();
     return delegate?.call(builder) ?? builder;
   }
 
   void add(EventType event) {
     final definition = _definitionForState(state);
-    final nextState = definition.add(event, state);
-    if (nextState != null && nextState != state) {
+    final enteringState = definition.add(event, state);
+    if (enteringState != null && enteringState != state) {
       onTransition(EventStateMachineTransition(
         machine: this,
-        currentState: state,
-        nextState: nextState,
+        exitingState: state,
+        enteringState: enteringState,
         event: event,
       ));
-      final nextDefinition = _definitionForState(state);
-      definition.onExit(state);
-      state = nextState;
-      nextDefinition.onEnter(state);
+      definition.onExit(
+        exitingState: state,
+        enteringState: enteringState,
+      );
+      final previousState = state;
+      state = enteringState;
+      final enteringDefinition = _definitionForState(enteringState);
+      enteringDefinition._onEnter(
+        exitingState: previousState,
+        enteringState: enteringState,
+      );
     }
   }
 
