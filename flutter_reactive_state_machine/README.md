@@ -1,0 +1,1 @@
+This package provides additional implementation of the state machine's from `reactive_state_machine` package for flutter: `ListenableStreamStateMachine` and `ListenableCommandStateMachine`.
