@@ -44,3 +44,24 @@ mixin State<MachineType extends CommandStateMachine<StateType>,
     _machine?._requestTransition(this, state);
   }
 }
+
+abstract class StreamCommandStateMachine<
+    StateType extends State<StreamCommandStateMachine<StateType>,
+        StateType>> extends CommandStateMachine<StateType> {
+  StreamCommandStateMachine(super.initial) : _state = initial;
+
+  StateType _state;
+
+  final _controller = StreamController<StateType>.broadcast();
+
+  @override
+  StateType get state => _state;
+
+  Stream<StateType> get stream => _controller.stream;
+
+  @override
+  set state(StateType newState) {
+    _state = newState;
+    _controller.add(newState);
+  }
+}
