@@ -1,5 +1,6 @@
 name: reactive_state_machine
 description: A flexible and easy-to-use framework to create reactive hierarchical finite state machines.
+repository: https://github.com/AffordantSoftware/reactive_state_machine
 version: 0.0.1-dev.1
 
 environment:
