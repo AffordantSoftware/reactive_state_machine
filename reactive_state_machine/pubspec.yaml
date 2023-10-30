@@ -1,12 +1,9 @@
 name: reactive_state_machine
 description: A flexible and easy-to-use framework to create reactive hierarchical finite state machines.
-version: 0.0.1
+version: 0.0.1-dev.1
 
 environment:
   sdk: ^3.1.5
-
-dependencies:
-  # path: ^1.8.0
 
 dev_dependencies:
   lints: ^2.0.0
