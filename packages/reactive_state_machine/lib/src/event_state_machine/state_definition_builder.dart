@@ -5,13 +5,12 @@ part of 'event_state_machine.dart';
 /// [StateDefinitionBuilder] provides methods to register defined state's event handlers.
 /// and side effects as well nested states.
 /// * [on] method is used to register event handlers.
-/// * [onEnter], [onChange], [onExit] methods are used to register side effects.
+/// * [onEnter] and [onExit] methods are used to register side effects.
 /// * [define] method is used to defined nested state.
 ///
 /// ```dart
 /// define<ParentState>((StateDefinitionBuilder b) => b
 ///   ..onEnter(...)
-///   ..onChange(...)
 ///   ..onExit(...)
 ///   ..on<Event1>(...)
 ///   ..define<ChildState1>(...)
@@ -151,7 +150,6 @@ class StateDefinitionBuilder<State, Event, DefinedState extends State> {
   ///   ..define<ChildState1>()
   ///   ..define<ChildState2>(($) => $
   ///     ..onEnter(...)
-  ///     ..onChange(...)
   ///     ..onExit(...)
   ///     ..on<Event1>(...)
   ///     ..define<ChildState2.1>(($) => $

@@ -7,8 +7,6 @@ abstract class Event {}
 
 class EventA extends Event {}
 
-class TriggerStateOnChange extends Event {}
-
 abstract class State {
   @override
   bool operator ==(Object value) => false;
@@ -32,21 +30,17 @@ class DummyStateMachine extends StreamEventStateMachine<State, Event> {
       ($) => $
         ..onEnter((_) => onEnterCalls.add("StateA"))
         ..onExit((_) => onExitCalls.add("StateA"))
-        // ..onChange((_, __) => onChangeCalls.add("StateA"))
         ..on<EventA>((_, __) => StateB()),
     ),
     define<StateB>(
       ($) => $
         ..onEnter((_) => onEnterCalls.add("StateB"))
-        ..onExit((_) => onExitCalls.add("StateB"))
-        // ..onChange((_, __) => onChangeCalls.add("StateB"))
-        ..on<TriggerStateOnChange>((_, __) => StateB()),
+        ..onExit((_) => onExitCalls.add("StateB")),
     ),
   };
 
   List<String> onEnterCalls = [];
   List<String> onExitCalls = [];
-  // List<String> onChangeCalls = [];
 }
 
 void main() {
@@ -73,23 +67,5 @@ void main() {
 
       expect(sm.onExitCalls, ["StateA"]);
     });
-
-    //   test("onChange is called when transiting to same state", () async {
-    //     final sm = DummyStateMachine(initialState: StateB());
-    //     sm.add(TriggerStateOnChange());
-
-    //     await wait();
-
-    //     expect(sm.onChangeCalls, ["StateB"]);
-    //   });
-
-    //   test("onChange is not called when transiting to an other state", () async {
-    //     final sm = DummyStateMachine();
-    //     sm.add(EventA());
-
-    //     await wait();
-
-    //     expect(sm.onChangeCalls, []);
-    //   });
   });
 }

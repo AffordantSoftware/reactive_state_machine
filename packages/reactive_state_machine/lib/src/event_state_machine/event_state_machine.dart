@@ -39,7 +39,7 @@ typedef StateDefinitionBuilderCallback<StateType, EventType,
 /// * **Event handlers** react to an incoming event and can emit the next
 ///  machine's state. We call this a _transition_.
 /// * **Side effects** are callback functions called depending on state
-///  lifecycle. You have access to three different side effects: `onEnter`, `onExit`, and `onChange`.
+///  lifecycle. You have access to different side effects: `onEnter` and `onExit`
 ///
 /// When an event is received, the state machine will first search
 /// for the actual state definition. Each current state's event handler
@@ -51,11 +51,10 @@ typedef StateDefinitionBuilderCallback<StateType, EventType,
 /// state immediately.
 ///
 /// ```dart
-/// class MyStateMachine extends StateMachine<Event, State> {
+/// class MyStateMachine extends EventStateMachine<Event, State> {
 /// MyStateMachine() : super(InitialState()) {
 ///    define<InitialState>(($) => $
 ///      ..onEnter((InitialState state) { /** ... **/ })
-///      ..onChange((InitialState state, InitialState nextState) { /** ... **/ })
 ///      ..onExit((InitialState state) { /** ... **/ })
 ///      ..on<SomeEvent>((SomeEvent event, InitialState state) => OtherState())
 ///    );
@@ -66,8 +65,8 @@ typedef StateDefinitionBuilderCallback<StateType, EventType,
 ///
 /// See also:
 ///
-/// * [Bloc] class for more information about general blocs behavior
-/// {@endtemplate state_machine}
+/// * [CommandStateMachine] an imperative-style state machine
+/// {@endtemplate}
 abstract class EventStateMachine<StateType, EventType>
     extends StateMachineBase<StateType> {
   EventStateMachine(StateType initial) {
@@ -130,7 +129,6 @@ abstract class EventStateMachine<StateType, EventType>
   /// MyStateMachine() : super(InitialState()) {
   ///    define<InitialState>(($) => $
   ///      ..onEnter((InitialState state) { /** ... **/ })
-  ///      ..onChange((InitialState state, InitialState nextState) { /** ... **/ })
   ///      ..onExit((InitialState state) { /** ... **/ })
   ///      ..on<SomeEvent>((SomeEvent event, InitialState state) => OtherState())
   ///    );

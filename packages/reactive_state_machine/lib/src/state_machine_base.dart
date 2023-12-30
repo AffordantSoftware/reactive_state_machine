@@ -17,25 +17,22 @@ abstract class StateMachineBase<StateType> {
 
   StateType get state;
 
-  /// Called whenever a [change] occurs with the given [change].
-  /// A [change] occurs when a new `state` is emitted.
-  /// [onChange] is called before the `state` of the `cubit` is updated.
-  /// [onChange] is a great spot to add logging/analytics for a specific `cubit`.
+  /// Called whenever a transition occurs with the given [Transition] object.
+  /// A transition occurs when a new [state] is emitted.
+  /// [onTransition] is called before the [state] of the state machine is updated.
+  /// [onTransition] is a great spot to add logging/analytics for a specific state machine.
   ///
-  /// **Note: `super.onChange` should always be called first.**
+  /// **Note: `super.onTransition` should always be called first.**
   /// ```dart
   /// @override
-  /// void onChange(Change change) {
-  ///   // Always call super.onChange with the current change
-  ///   super.onChange(change);
+  /// void onTransition(Transition transition) {
+  ///   // Always call super.onTransition with the current change
+  ///   super.onTransition(change);
   ///
-  ///   // Custom onChange logic goes here
+  ///   // Custom onTransition logic goes here
   /// }
   /// ```
   ///
-  /// See also:
-  ///
-  /// * [BlocObserver] for observing [Cubit] behavior globally.
   // @protected
   // @mustCallSuper
   void onTransition(covariant Transition<dynamic, StateType> transition) {}

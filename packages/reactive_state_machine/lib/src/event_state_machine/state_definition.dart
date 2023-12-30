@@ -75,17 +75,6 @@ class _StateDefinition<SuperState, Event, DefinedState extends SuperState> {
     );
   }
 
-  // void onChange(DefinedState current, DefinedState next) {
-  //   final currentDefinition = _nestedStateDefinition(current);
-  //   final nextDefinition = _nestedStateDefinition(next);
-  //   if (currentDefinition == nextDefinition) {
-  //     currentDefinition?.onChange(current, next);
-  //   } else {
-  //     currentDefinition?.onExit(current);
-  //     nextDefinition?.onEnter(next);
-  //   }
-  // }
-
   void onExit({
     required DefinedState exitingState,
     required dynamic enteringState,
